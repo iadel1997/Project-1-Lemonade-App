@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
@@ -52,10 +53,11 @@ class MainActivity : AppCompatActivity() {
         setViewElements()
         lemonImage!!.setOnClickListener {
             // TODO: call the method that handles the state when the image is clicked
+            clickLemonImage()
         }
         lemonImage!!.setOnLongClickListener {
             // TODO: replace 'false' with a call to the function that shows the squeeze count
-            false
+            showSnackbar()
         }
     }
 
@@ -76,10 +78,27 @@ class MainActivity : AppCompatActivity() {
      * This method determines the state and proceeds with the correct action.
      */
     private fun clickLemonImage() {
+
         // TODO: use a conditional statement like 'if' or 'when' to track the lemonadeState
         //  when the image is clicked we may need to change state to the next step in the
         //  lemonade making progression (or at least make some changes to the current state in the
         //  case of squeezing the lemon). That should be done in this conditional statement
+        if(lemonadeState == SELECT ){
+            lemonadeState = SQUEEZE
+            lemonSize = lemonTree.pick()
+            squeezeCount = 1
+        } else if (lemonadeState == SQUEEZE) {
+            squeezeCount++
+            lemonSize--
+            lemonadeState = if (lemonSize == 0 ){DRINK} else SQUEEZE
+        } else if (lemonadeState == DRINK) {
+            lemonadeState = RESTART
+            lemonSize--
+        } else if (lemonadeState == RESTART){
+            lemonadeState=SELECT
+        }
+    setViewElements()
+
 
         // TODO: When the image is clicked in the SELECT state, the state should become SQUEEZE
         //  - The lemonSize variable needs to be set using the 'pick()' method in the LemonTree class
@@ -103,6 +122,25 @@ class MainActivity : AppCompatActivity() {
      */
     private fun setViewElements() {
         val textAction: TextView = findViewById(R.id.text_action)
+        val lemonImage :ImageView = findViewById(R.id.image_lemon_state)
+//o
+        //l
+        if (lemonadeState == SELECT){
+            textAction.text=getString(R.string.lemon_select)
+            lemonImage.setImageResource(R.drawable.lemon_tree)
+        } else if (lemonadeState == SQUEEZE) {
+            textAction.text=getString(R.string.lemon_squeeze)
+            lemonImage.setImageResource(R.drawable.lemon_squeeze)
+
+        } else if(lemonadeState == DRINK){
+            textAction.text=getString(R.string.lemon_drink)
+            lemonImage.setImageResource(R.drawable.lemon_drink)
+        } else if (lemonadeState == RESTART) {
+            textAction.text=getString(R.string.lemon_empty_glass)
+            lemonImage.setImageResource(R.drawable.lemon_restart)
+
+
+        }
         // TODO: set up a conditional that tracks the lemonadeState
 
         // TODO: for each state, the textAction TextView should be set to the corresponding string from
